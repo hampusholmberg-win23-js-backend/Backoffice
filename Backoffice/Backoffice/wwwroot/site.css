@@ -1109,11 +1109,6 @@ label {
   grid-template-columns: auto;
   grid-template-areas: "label " "input " "span ";
 }
-@media (min-width: 768px) {
-  .backoffice-update .container .create-form .input-div {
-    /*height: 85px;*/
-  }
-}
 .backoffice-update .container .create-form .input-div span {
   grid-area: span;
   text-align: end;
