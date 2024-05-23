@@ -8,10 +8,9 @@
                     <a id="silicon-logo" href="/"><img id="silicon-logo-img" src="/images/silicone-logo-light_theme.svg" /></a>
 
                     <div id="navigation" class="navigation hidden">
-                        <NavLink class="menu-link" href="/users">Users</NavLink>
-                        <NavLink class="menu-link" href="/courses">Courses</NavLink>
-                        <NavLink class="menu-link" href="/contact">Newsletter</NavLink>
-                        <NavLink id="details-link" class="menu-link" href="/account/details">Account Details</NavLink>
+                    <NavLink class="menu-link" href="/signout"><p>Sign Out</p> <i class="fa-solid fa-arrow-right-from-bracket"></i></NavLink>
+
+                        <NavLink id="details-link" class="menu-link hidden" href="/account/details">Account Details</NavLink>
                     </div>
 
                 </Authorized>
@@ -22,7 +21,7 @@
                 </NotAuthorized>
             </AuthorizeView>
 
-        <button class="btn-mobile" onclick="toggleMenu()"><i id="btn-mobile-icon" class="fa-solid fa-bars"></i></button>
+        <button class="btn-mobile hidden" onclick="toggleMenu()"><i id="btn-mobile-icon" class="fa-solid fa-bars"></i></button>
     </div>
 
 </header>
