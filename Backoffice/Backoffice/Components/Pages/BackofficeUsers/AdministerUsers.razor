@@ -65,8 +65,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Users = await UserManager.Users.ToListAsync();
-
+        Users = await UserManager.Users
+        .OrderBy(x => x.FirstName)
+        .ToListAsync();
     }
 
 

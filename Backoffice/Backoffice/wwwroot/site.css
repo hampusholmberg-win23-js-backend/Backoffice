@@ -1070,6 +1070,77 @@ label {
   }
 }
 
+@media (min-width: 992px) {
+  .backoffice-update {
+    margin-top: 5rem;
+  }
+}
+.backoffice-update .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.backoffice-update .container h3 {
+  margin-bottom: 2rem;
+}
+.backoffice-update .container .status-message {
+  align-self: center;
+}
+.backoffice-update .container .create-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-content: center;
+  max-width: 530px;
+  min-width: 280px;
+  row-gap: 1rem;
+}
+@media (min-width: 768px) {
+  .backoffice-update .container .create-form {
+    width: 80%;
+  }
+}
+.backoffice-update .container .create-form .checkbox-div {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.backoffice-update .container .create-form .input-div {
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-areas: "label " "input " "span ";
+}
+@media (min-width: 768px) {
+  .backoffice-update .container .create-form .input-div {
+    /*height: 85px;*/
+  }
+}
+.backoffice-update .container .create-form .input-div span {
+  grid-area: span;
+  text-align: end;
+  height: 26px;
+}
+.backoffice-update .container .create-form .input-div input {
+  width: 100%;
+  grid-area: input;
+}
+.backoffice-update .container .create-form .input-div label {
+  grid-area: label;
+}
+.backoffice-update .container .create-form .input-div .validation-message {
+  color: #EF4444;
+}
+.backoffice-update .container .create-form button {
+  margin-top: 2rem;
+}
+@media (min-width: 768px) {
+  .backoffice-update .container .content-box {
+    min-width: 526px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+}
+
 .hidden {
   display: none !important;
 }
