@@ -18,13 +18,16 @@ header {
         }
 
         .navigation {
+            display: flex !important;
+            gap: 1.5rem;
 
-            @include lg {
-                display: flex !important;
-                gap: 1.5rem;
+            a {
+                display: flex;
+                gap: .7rem;
+                align-items: center;
 
-                #details-link {
-                    display: none;
+                p {
+                    margin: 0;
                 }
             }
         }
