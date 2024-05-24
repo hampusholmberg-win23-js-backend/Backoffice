@@ -3,5 +3,10 @@
 public class GraphQLQuery
 {
     public string Query { get; set; } = null!;
-    public Variables? Variables { get; set; }
+    public QueryVariables? Variables { get; set; }
+}
+
+public class QueryVariables
+{
+    public int Id { get; set; }
 }

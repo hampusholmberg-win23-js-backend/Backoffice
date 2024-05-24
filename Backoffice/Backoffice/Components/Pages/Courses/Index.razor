@@ -1,6 +1,6 @@
 ﻿@page "/courses"
 
-<AuthorizeView Roles="Admin">
+<AuthorizeView Roles="Admin, SuperUser, ContentCreator">
     <Authorized>
         <section class="courses-dashboard home-dashboard">
             <div class="container">

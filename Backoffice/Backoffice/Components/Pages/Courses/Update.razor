@@ -1,4 +1,4 @@
-﻿@page "/courses/create"
+﻿@page "/courses/administer/{id}"
 
 @using System.ComponentModel.DataAnnotations
 @using System.Text
@@ -23,7 +23,6 @@
 @inject HttpClient http
 @inject IJSRuntime JSRuntime
 
-
 <AuthorizeView Context="authContext" Roles="Admin, SuperUser, ContentCreator">
     <Authorized>
 
@@ -31,7 +30,7 @@
 
             <div class="container">
 
-                <h3>Create Course</h3>
+                <h3>Update Course</h3>
 
                 @if (!string.IsNullOrEmpty(ErrorMessage))
                 {
@@ -43,7 +42,7 @@
                     <p class="success-flag status-message">@SuccessMessage</p>
                 }
 
-                <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="CreateCourse" FormName="create-course" novalidate id="backoffice-create-user-form" class="create-form" >
+                <EditForm Model="Input" method="post" OnValidSubmit="UpdateCourse" FormName="create-course" novalidate id="backoffice-create-user-form" class="create-form">
                     <DataAnnotationsValidator />
 
                     <div class="input-div" id="backoffice-create-course-form-title">
@@ -124,39 +123,86 @@
                         <ValidationMessage For="() => Input.AuthorFacebookFollowersQty" />
                     </div>
 
-                    <button class="btn-theme" type="submit">Create course</button>
+                    <button class="btn-theme" type="submit">Update course</button>
 
                 </EditForm>
 
             </div>
 
         </section>
+
     </Authorized>
 
     <NotAuthorized>
-        <Login />
+        <Login/>
     </NotAuthorized>
+
 </AuthorizeView>
 
+
 @code {
+    [Parameter]
+    public string id { get; set; }
+
     private string? ErrorMessage { get; set; }
     private string? SuccessMessage { get; set; }
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
 
-    [SupplyParameterFromQuery]
-    private string? ReturnUrl { get; set; }
+    private CourseModel course { get; set; } = null!;
 
-    public async Task CreateCourse(EditContext editContext)
+    protected async override Task OnInitializedAsync()
     {
-        var query = new GraphQLMutationCreate
+        int queryId = Convert.ToInt32(id);
+
+        var query = new GraphQLQuery
         {
-            query = "mutation ($input: CourseCreateRequestInput!) { createCourse(input: $input) { id name } }",
-            variables = new CreateVariables
+            Query = "query($id: Int!) { GetCourseById(id: $id) { id name description ingress price hoursToComplete likesPercentage likesAmount image authorName authorDescription authorImage authorYoutubeFollowersQty authorFacebookFollowersQty } }",
+            Variables = new QueryVariables
             {
-                input = new CreateCourseModel
+                Id = queryId
+            }
+        };
+
+        var response = await http.PostAsJsonAsync(config["Api_CourseProvider_GraphQL"], query);
+
+        var responseString = await response.Content.ReadAsStringAsync();
+
+        var rootObject = JsonConvert.DeserializeObject<DynamicGraphQLResponse>(responseString);
+
+        course = rootObject.Data.GetCourseById;
+
+        if (course != null)
+        {
+            Input.Name = course.name;
+            Input.Description = course.description;
+            Input.Ingress = course.ingress;
+            Input.Price = course.price;
+            Input.HoursToComplete = course.hoursToComplete;
+            Input.LikesPercentage = course.likesPercentage;
+            Input.LikesAmount = course.likesAmount;
+            Input.Image = course.image;
+            Input.AuthorName = course.authorName;
+            Input.AuthorDescription = course.authorDescription;
+            Input.AuthorImage = course.authorImage;
+            Input.AuthorYoutubeFollowersQty = course.authorYoutubeFollowersQty;
+            Input.AuthorFacebookFollowersQty = course.authorFacebookFollowersQty;
+        }
+    }
+
+    public async Task UpdateCourse(EditContext editContext)
+    {
+        int Id = Convert.ToInt32(id);
+
+        var query = new GraphQLMutationUpdate
+        {
+            query = "mutation ($input: CourseUpdateRequestInput!) { updateCourse(input: $input) { id name } }",
+            variables = new UpdateVariables
+            {
+                input = new CourseModel
                 {
+                    id = Id,
                     name = Input.Name,
                     description = Input.Description,
                     ingress = Input.Ingress,
@@ -178,14 +224,12 @@
 
         if (response.IsSuccessStatusCode)
         {
-            await JSRuntime.InvokeVoidAsync("alert", "Course was created successfully!");
-
-            // CHANGE so it navigates to the created course when setup ??
-            NavigationManager.NavigateTo("/courses");
+            await JSRuntime.InvokeVoidAsync("alert", "Course was updated successfully!");
+            NavigationManager.NavigateTo("/courses/administer");
         }
         else
         {
-            await JSRuntime.InvokeVoidAsync("alert", "Something went wrong, course was not created.");
+            await JSRuntime.InvokeVoidAsync("alert", "Something went wrong, course was not updated.");
         }
     }
 

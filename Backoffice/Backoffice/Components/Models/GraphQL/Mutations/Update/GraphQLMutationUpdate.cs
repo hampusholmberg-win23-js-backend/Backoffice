@@ -1,7 +1,7 @@
 ﻿namespace Backoffice.Components.Models.GraphQL;
 
-public class GraphQLMutation
+public class GraphQLMutationUpdate
 {
     public string query { get; set; } = null!;
-    public Variables? variables { get; set; }
+    public UpdateVariables? variables { get; set; }
 }

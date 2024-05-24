@@ -13,7 +13,6 @@
 
 <PageTitle>Log in</PageTitle>
 
-@* <p class="error-flag">@ErrorMessage</p> *@
 
 <AuthorizeView Context="authContext"> 
     <Authorized>
@@ -28,7 +27,7 @@
 
                     <h1>Welcome Back</h1>
 
-                    <p>Don’t have an account yet? <a href="/signup">Sign up here.</a></p>
+                    <p class="error-flag">@errorMessage</p>
 
                     <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="LoginUser" FormName="signin" novalidate id="sign-in-form">
                         <DataAnnotationsValidator />
@@ -45,27 +44,11 @@
                             <ValidationMessage For="() => Input.Password" />
                         </div>
 
-                        @*                 <div id="sign-in-form-remember-me-checkbox" class="checkbox-div">
-                        <input type="checkbox" asp-for="Form.RememberMe" />
-                        <label asp-for="Form.RememberMe"></label>
-                        </div> *@
-
                         <button type="submit" class="btn-theme">Sign in</button>
 
                     </EditForm>
 
                     <div class="bottom">
-
-                        <a href="#">Forgot your password?</a>
-                        @*                 <div class="line-top">
-                        <p>Or sign in with your social network</p>
-
-                        <div class="buttons">
-                        <a class="btn-gray" asp-action="Google" asp-controller="Auth"><i class="fa-brands fa-google"></i> Google</a>
-                        <a class="btn-gray" asp-action="Facebook" asp-controller="Auth"><i class="fa-brands fa-facebook-f"></i> Facebook</a>
-                        </div>
-
-                        </div> *@
 
                     </div>
 

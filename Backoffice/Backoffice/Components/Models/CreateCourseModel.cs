@@ -1,8 +1,7 @@
 ﻿namespace Backoffice.Components.Models;
 
-public class CourseModel
+public class CreateCourseModel
 {
-    public int id { get; set; }
     public string? name { get; set; }
     public string? description { get; set; }
     public string? ingress { get; set; }
