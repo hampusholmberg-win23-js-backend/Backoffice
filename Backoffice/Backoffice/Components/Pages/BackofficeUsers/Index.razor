@@ -1,11 +1,11 @@
 ﻿@page "/backoffice-users"
 
 
-<AuthorizeView Roles="Admin">
+<AuthorizeView Roles="Admin, SuperUser, ContentCreator">
     <Authorized>
         <section class="backoffice-users-dashboard home-dashboard">
             <div class="container">
-                <h3>BackofficeUsers</h3>
+                <h3>Backoffice Users</h3>
 
                 <div class="dashboard-grid">
 
@@ -25,15 +25,7 @@
     <NotAuthorized>
         <Login />
     </NotAuthorized>
-
 </AuthorizeView>
-
-
-
-
-
-
-
 
 @code {
 

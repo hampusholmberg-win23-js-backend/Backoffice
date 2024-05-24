@@ -54,6 +54,12 @@
                     grid-area: input;
                 }
 
+                textarea {
+                    width: 100%;
+                    height: 104px;
+                    grid-area: input;
+                }
+
                 label {
                     grid-area: label;
                 }
