@@ -72,14 +72,20 @@
 
                             <div class="input-div phone-number-input" id="backoffice-create-user-form-phone-number">
                                 <label for=Input.PhoneNumber>Phone number</label>
-                                <InputText @bind-Value="Input.PhoneNumber" readonly />
+                                <InputText @bind-Value="Input.PhoneNumber"  />
                                 <ValidationMessage For="() => Input.PhoneNumber" />
                             </div>
 
                             <div class="input-div biography-input" id="backoffice-create-user-form-biography">
                                 <label for=Input.Biography>Biography</label>
-                                <InputText @bind-Value="Input.Biography" readonly />
+                                <InputText @bind-Value="Input.Biography"  />
                                 <ValidationMessage For="() => Input.Biography" />
+                            </div>
+
+                            <div class="input-div newsletter-subscriber-input" id="backoffice-create-user-form-newsletter-subscriber">
+                                <label for=Input.NewsletterSubscriber>NewsletterSubscriber</label>
+                                <InputCheckbox @bind-Value="Input.NewsletterSubscriber"  />
+                                <ValidationMessage For="() => Input.NewsletterSubscriber" />
                             </div>
 
                             <p class="h4 mt-5">Address</p>
@@ -155,7 +161,8 @@
     protected override async Task OnInitializedAsync()
     {
         var request = new StringContent(JsonConvert.SerializeObject(new UserRetrievalRequest { Id = Id }), Encoding.UTF8, "application/json");
-        var result = await http.PostAsync(config["Api_AccountProvider_ReadOne"], request);
+        // var result = await http.PostAsync(config["Api_AccountProvider_ReadOne"], request);
+        var result = await http.PostAsync("http://localhost:7164/api/GetUser", request);
         var content = await result.Content.ReadAsStringAsync();
 
         if (content != null)
@@ -166,6 +173,7 @@
             Input.FirstName = User.FirstName;
             Input.LastName = User.LastName;
             Input.PhoneNumber = User.PhoneNumber;
+            Input.NewsletterSubscriber = User.NewsletterSubscriber;
 
             if (User.Address != null)
             {
@@ -203,11 +211,19 @@
             AddressErrorMessage = "No address was created, you must enter Street name, Postal Code and City for the address to be valid.";
         }
 
+        if (User.NewsletterSubscriber != Input.NewsletterSubscriber)
+            User.NewsletterSubscriber = Input.NewsletterSubscriber;
+
         var httpContent = new StringContent(JsonConvert.SerializeObject(User), Encoding.UTF8, "application/json");
         var result = await http.PostAsync(config["Api_AccountProvider_Update"], httpContent);
 
         if (result.IsSuccessStatusCode)
         {
+            if (User.NewsletterSubscriber)
+            {
+                var newsletterResult = await http.PostAsync(config["Api_NewsletterProvider_Create"], httpContent);
+            }
+
             await JSRuntime.InvokeVoidAsync("alert", "User was updated successfully!");
         }
     }
@@ -245,6 +261,8 @@
 
         [Required]
         public string Email { get; set; } = "";
+
+        public bool NewsletterSubscriber { get; set; }
 
         public AddressModel Address { get; set; } = new AddressModel();
     }
