@@ -1,6 +1,7 @@
 using Backoffice.Components;
 using Backoffice.Components.Account;
 using Backoffice.Data;
+using Backoffice.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +38,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddRoleManager<RoleManager<IdentityRole>>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<CourseService>();
 
 // NY; TA BORT OM DET KLABBAR 
 builder.Services.AddAuthorization(options =>
