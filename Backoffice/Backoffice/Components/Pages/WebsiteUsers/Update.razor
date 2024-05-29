@@ -162,7 +162,6 @@
     {
         var request = new StringContent(JsonConvert.SerializeObject(new UserRetrievalRequest { Id = Id }), Encoding.UTF8, "application/json");
         var result = await http.PostAsync(config["Api_AccountProvider_ReadOne"], request);
-        // var result = await http.PostAsync("http://localhost:7164/api/GetUser", request);
         var content = await result.Content.ReadAsStringAsync();
 
         if (content != null)
@@ -204,7 +203,6 @@
             };
 
             AddressErrorMessage = null;
-
         }
         else if (IsAnyAddressFieldFilled())
         {
