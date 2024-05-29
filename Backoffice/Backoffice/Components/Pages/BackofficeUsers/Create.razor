@@ -131,20 +131,12 @@
             var createdUser = await UserManager.Users.FirstOrDefaultAsync(x => x.Email == Input.Email);
             await UserManager.AddToRoleAsync(createdUser, Input.Role);
 
-            // SuccessMessage = $"{Input.Role} - {Input.FirstName} {Input.LastName} was created successfully ";
-            // Input = new();
-
             await JSRuntime.InvokeVoidAsync("alert", $"User {createdUser.FirstName} {createdUser.LastName} was created successfully!");
             NavigationManager.NavigateTo("/backoffice-users");
         }
 
         if (!result.Succeeded)
             return;
-
-        Logger.LogInformation("User created a new account with password.");
-
-
-
     }
 
     private sealed class InputModel
