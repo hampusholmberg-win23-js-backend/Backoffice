@@ -45,7 +45,7 @@
                     <p class="success-flag status-message">@SuccessMessage</p>
                 }
 
-                <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="CreateCourse" FormName="create-course" novalidate id="backoffice-create-user-form" class="create-form" >
+                <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnSubmit="CreateCourse" FormName="create-course" novalidate id="backoffice-create-user-form" class="create-form" >
                     <DataAnnotationsValidator />
 
                     <div class="input-div" id="backoffice-create-course-form-title">
@@ -90,10 +90,10 @@
                         <ValidationMessage For="() => Input.LikesAmount" />
                     </div>
 
-                    <div class="input-div" id="backoffice-create-course-form-File">
-                        <label For="Input.File">Image URL</label>
-                        <InputFile OnChange="HandleSelectedFile" @bind-Value="Input.File" />
-                        <ValidationMessage For="() => Input.File" />
+                    <div class="input-div" id="backoffice-create-course-form-course-image-file">
+                        <label For="Input.CourseImageFile">Image URL</label>
+                        <InputFile OnChange="HandleSelectedCourseImageFile" @bind-Value="Input.CourseImageFile" />
+                        <ValidationMessage For="() => Input.CourseImageFile" />
                     </div>
 
                     <div class="input-div" id="backoffice-create-course-form-author-name">
@@ -108,10 +108,10 @@
                         <ValidationMessage For="() => Input.AuthorDescription" />
                     </div>
 
-                    <div class="input-div" id="backoffice-create-course-form-author-image">
-                        <label For="Input.AuthorImage">Author image URL</label>
-                        <InputText @bind-Value="Input.AuthorImage" />
-                        <ValidationMessage For="() => Input.AuthorImage" />
+                    <div class="input-div" id="backoffice-create-course-form-author-image-file">
+                        <label For="Input.AuthorImageFile">Image URL</label>
+                        <InputFile OnChange="HandleSelectedAuthorImageFile" @bind-Value="Input.AuthorImageFile" />
+                        <ValidationMessage For="() => Input.AuthorImageFile" />
                     </div>
 
                     <div class="input-div" id="backoffice-create-course-form-author-youtube-followers-qty">
@@ -156,7 +156,8 @@
     public async Task CreateCourse(EditContext editContext)
     {
 
-        Input.Image = await _courseService.GetImageUrlAsync(Input.File, http, config);
+        Input.CourseImage = await _courseService.GetImageUrlAsync(Input.CourseImageFile, "courses", http, config);
+        Input.AuthorImage = await _courseService.GetImageUrlAsync(Input.AuthorImageFile, "authors", http, config);
             
         var query = new GraphQLMutationCreate
         {
@@ -172,7 +173,7 @@
                     hoursToComplete = Input.HoursToComplete,
                     likesPercentage = Input.LikesPercentage,
                     likesAmount = Input.LikesAmount,
-                    image = Input.Image,
+                    image = Input.CourseImage,
                     authorName = Input.AuthorName,
                     authorDescription = Input.AuthorDescription,
                     authorImage = Input.AuthorImage,
@@ -195,10 +196,16 @@
         }
     }
 
-    public async Task HandleSelectedFile(InputFileChangeEventArgs e)
+    public async Task HandleSelectedCourseImageFile(InputFileChangeEventArgs e)
     {
         SelectedFile = e.File;
-        Input.File = SelectedFile;
+        Input.CourseImageFile = SelectedFile;
+    }
+
+    public async Task HandleSelectedAuthorImageFile(InputFileChangeEventArgs e)
+    {
+        SelectedFile = e.File;
+        Input.AuthorImageFile = SelectedFile;
     }
 
     private sealed class InputModel
@@ -231,10 +238,12 @@
         [Display(Name = "Likes amount")]
         public int LikesAmount { get; set; }
 
-        public IBrowserFile File { get; set; }
+        public IBrowserFile CourseImageFile { get; set; }
+
+        public IBrowserFile AuthorImageFile { get; set; }
 
         [Display(Name = "Image URL")]
-        public string Image { get; set; } = null!;
+        public string CourseImage { get; set; } = null!;
 
         [Required]
         [Display(Name = "Author name")]

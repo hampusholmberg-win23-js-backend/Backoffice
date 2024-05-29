@@ -8,7 +8,7 @@ namespace Backoffice.Services;
 public class CourseService
 {
 
-    public async Task<string> GetImageUrlAsync(IBrowserFile File, HttpClient http, IConfiguration config)
+    public async Task<string> GetImageUrlAsync(IBrowserFile File, string containerName, HttpClient http, IConfiguration config)
     {
         var content = new MultipartFormDataContent();
 
@@ -17,7 +17,7 @@ public class CourseService
         fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(File.ContentType);
 
         content.Add(fileContent, "file", File.Name);
-        content.Add(new StringContent("courses"), "containerName");
+        content.Add(new StringContent(containerName), "containerName");
 
         var response = await http.PostAsync(config["Api_FileProvider_Create"], content);
 
