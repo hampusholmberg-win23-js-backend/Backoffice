@@ -155,7 +155,6 @@
 
     public async Task CreateCourse(EditContext editContext)
     {
-
         Input.CourseImage = await _courseService.GetImageUrlAsync(Input.CourseImageFile, "courses", http, config);
         Input.AuthorImage = await _courseService.GetImageUrlAsync(Input.AuthorImageFile, "authors", http, config);
             
