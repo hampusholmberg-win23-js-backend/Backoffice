@@ -10,23 +10,33 @@ public class CourseService
 
     public async Task<string> GetImageUrlAsync(IBrowserFile File, string containerName, HttpClient http, IConfiguration config)
     {
-        var content = new MultipartFormDataContent();
+        try
+        {
+            if (File == null)
+                return null!;
 
-        var fileContent = new StreamContent(File!.OpenReadStream(File.Size));
+            var content = new MultipartFormDataContent();
 
-        fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(File.ContentType);
+            var fileContent = new StreamContent(File!.OpenReadStream(File.Size));
 
-        content.Add(fileContent, "file", File.Name);
-        content.Add(new StringContent(containerName), "containerName");
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(File.ContentType);
 
-        var response = await http.PostAsync(config["Api_FileProvider_Create"], content);
+            content.Add(fileContent, "file", File.Name);
+            content.Add(new StringContent(containerName), "containerName");
 
-        var unpacked = await response.Content.ReadAsStringAsync();
+            var response = await http.PostAsync(config["Api_FileProvider_Create"], content);
 
-        var jsonUnpacked = JsonConvert.DeserializeObject<FileUploadResponseModel>(unpacked);
+            var unpacked = await response.Content.ReadAsStringAsync();
 
-        var imageUrl = jsonUnpacked.FilePath;
+            var jsonUnpacked = JsonConvert.DeserializeObject<FileUploadResponseModel>(unpacked);
 
-        return imageUrl;        
+            var imageUrl = jsonUnpacked.FilePath;
+
+            return imageUrl;
+        }
+        catch
+        {
+            return null!;
+        }      
     }
 }

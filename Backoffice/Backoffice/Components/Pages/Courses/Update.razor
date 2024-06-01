@@ -6,6 +6,7 @@
 @using Backoffice.Components.Models
 @using Backoffice.Components.Models.GraphQL
 @using Backoffice.Components.Models.GraphQL.Mutations.Create
+@using Backoffice.Services
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @using Backoffice.Data
@@ -21,6 +22,7 @@
 @inject NavigationManager NavigationManager
 @inject IConfiguration config
 @inject HttpClient http
+@inject CourseService _courseService
 @inject IJSRuntime JSRuntime
 
 <AuthorizeView Context="authContext" Roles="Admin, SuperUser, ContentCreator">
@@ -87,10 +89,10 @@
                         <ValidationMessage For="() => Input.LikesAmount" />
                     </div>
 
-                    <div class="input-div" id="backoffice-create-course-form-image">
-                        <label For="Input.Image">Image URL</label>
-                        <InputText @bind-Value="Input.Image" />
-                        <ValidationMessage For="() => Input.Image" />
+                    <div class="input-div" id="backoffice-create-course-form-course-image-file">
+                        <label For="Input.CourseImageFile">Course image</label>
+                        <InputFile OnChange="HandleSelectedCourseImageFile" @bind-Value="Input.CourseImageFile" />
+                        <ValidationMessage For="() => Input.CourseImageFile" />
                     </div>
 
                     <div class="input-div" id="backoffice-create-course-form-author-name">
@@ -105,10 +107,10 @@
                         <ValidationMessage For="() => Input.AuthorDescription" />
                     </div>
 
-                    <div class="input-div" id="backoffice-create-course-form-author-image">
-                        <label For="Input.AuthorImage">Author image URL</label>
-                        <InputText @bind-Value="Input.AuthorImage" />
-                        <ValidationMessage For="() => Input.AuthorImage" />
+                    <div class="input-div" id="backoffice-create-course-form-author-image-file">
+                        <label For="Input.AuthorImageFile">Author image</label>
+                        <InputFile OnChange="HandleSelectedAuthorImageFile" @bind-Value="Input.AuthorImageFile" />
+                        <ValidationMessage For="() => Input.AuthorImageFile" />
                     </div>
 
                     <div class="input-div" id="backoffice-create-course-form-author-youtube-followers-qty">
@@ -154,6 +156,8 @@
 
     private CourseModel course { get; set; } = null!;
 
+    private IBrowserFile? SelectedFile { get; set; }
+
     protected async override Task OnInitializedAsync()
     {
         int queryId = Convert.ToInt32(id);
@@ -184,7 +188,7 @@
             Input.HoursToComplete = course.hoursToComplete;
             Input.LikesPercentage = course.likesPercentage;
             Input.LikesAmount = course.likesAmount;
-            Input.Image = course.image;
+            Input.CourseImage = course.image;
             Input.AuthorName = course.authorName;
             Input.AuthorDescription = course.authorDescription;
             Input.AuthorImage = course.authorImage;
@@ -196,6 +200,9 @@
     public async Task UpdateCourse(EditContext editContext)
     {
         int Id = Convert.ToInt32(id);
+
+        Input.CourseImage = await _courseService.GetImageUrlAsync(Input.CourseImageFile, "courses", http, config) ?? course.image!;
+        Input.AuthorImage = await _courseService.GetImageUrlAsync(Input.AuthorImageFile, "authors", http, config) ?? course.authorImage!;
 
         var query = new GraphQLMutationUpdate
         {
@@ -212,7 +219,7 @@
                     hoursToComplete = Input.HoursToComplete,
                     likesPercentage = Input.LikesPercentage,
                     likesAmount = Input.LikesAmount,
-                    image = Input.Image,
+                    image = Input.CourseImage,
                     authorName = Input.AuthorName,
                     authorDescription = Input.AuthorDescription,
                     authorImage = Input.AuthorImage,
@@ -233,6 +240,18 @@
         {
             await JSRuntime.InvokeVoidAsync("alert", "Something went wrong, course was not updated.");
         }
+    }
+
+    public async Task HandleSelectedCourseImageFile(InputFileChangeEventArgs e)
+    {
+        SelectedFile = e.File;
+        Input.CourseImageFile = SelectedFile;
+    }
+
+    public async Task HandleSelectedAuthorImageFile(InputFileChangeEventArgs e)
+    {
+        SelectedFile = e.File;
+        Input.AuthorImageFile = SelectedFile;
     }
 
     public async Task DeleteCourse()
@@ -296,9 +315,12 @@
         [Display(Name = "Likes amount")]
         public int LikesAmount { get; set; }
 
-        [Required]
+        public IBrowserFile CourseImageFile { get; set; }
+
+        public IBrowserFile AuthorImageFile { get; set; }
+
         [Display(Name = "Image URL")]
-        public string Image { get; set; } = null!;
+        public string CourseImage { get; set; } = null!;
 
         [Required]
         [Display(Name = "Author name")]
